@@ -7,7 +7,7 @@
 
 This is a client for **ip-api.com** API service that uses its JSON endpoints. It works for the free and professional API, requiring an API key to identify the customer.
 
-IMPORTANT NOTE:
+**IMPORTANT NOTE:**
 
 _If you are using a free account there is a request limit per minute, as the time of this writting is 45 req/min. Currently the library do no manage this limits and you can have the service banned for your IP._
 
@@ -47,9 +47,9 @@ func main() {
 	}
 
 	fmt.Println(response.Query)   // IP requested
-	fmt.Println(response.Status)  // success of fail
-	fmt.Println(response.Message) // Message is not black with the status of the request is fail,
-	//   in this case it states that IP is from a reserved range
+	fmt.Println(response.Status)  // success or fail
+	fmt.Println(response.Message) // Message is filled when status of the request is fail,
+	                              // in this case it states that IP is from a reserved range
 
 	// require a different set of fields
 	client.SetFields([]string{"status", "message", "query", "country", "regionName", "city", "zip", "lat", "lon"})
