@@ -52,7 +52,7 @@ func main() {
 	                              // in this case it states that IP is from a reserved range
 
 	// require a different set of fields
-	client.SetFields([]string{"status", "message", "query", "country", "regionName", "city", "zip", "lat", "lon"})
+	client.SetFields([]string{"status", "message", "query", "country", "regionName", "city", "zip", "lat", "lon"}, false)
 
 	// set a different timeout
 	client.SetTimeout(10 * time.Second)
