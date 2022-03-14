@@ -145,6 +145,7 @@ func (c *Client) SetFields(fields []string, numeric bool) {
 		c.fields = strconv.Itoa(total)
 		return
 	}
+
 	c.fields = strings.Join(finalFields, ",")
 
 }

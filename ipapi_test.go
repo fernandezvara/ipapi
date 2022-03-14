@@ -49,4 +49,11 @@ func Test_Client_Funcs(t *testing.T) {
 	client.SetFields([]string{"status", "query", "query", "query", "message"}, true)
 	assert.Equal(t, client.fields, "57344")
 
+	q, err := client.Query(context.Background(), "224.0.0.1")
+	assert.Nil(t, err)
+	assert.Equal(t, q.Status, "fail")
+	assert.Equal(t, q.Message, "reserved range")
+	assert.Equal(t, q.Query, "224.0.0.1")
+	assert.Equal(t, q.Country, "")
+
 }
