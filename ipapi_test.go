@@ -40,10 +40,13 @@ func Test_Client_Funcs(t *testing.T) {
 	assert.False(t, client.fieldAllowed("nonAllowed"))
 
 	assert.Equal(t, client.fields, "status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query")
-	client.SetFields([]string{"status", "message", "query", "invalid1", "invalid2"})
+	client.SetFields([]string{"status", "message", "query", "invalid1", "invalid2"}, false)
 	assert.Equal(t, client.fields, "status,message,query")
 
 	client.SetTimeout(10 * time.Second)
 	assert.Equal(t, client.timeout, 10*time.Second)
+
+	client.SetFields([]string{"status", "query", "query", "query", "message"}, true)
+	assert.Equal(t, client.fields, "57344")
 
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -17,6 +18,34 @@ const (
 	defaultFields  = "status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query"
 	defaultTimeout = 5 * time.Second
 )
+
+var allFields = map[string]int{
+	"country":       1,
+	"countryCode":   2,
+	"region":        4,
+	"regionName":    8,
+	"city":          16,
+	"zip":           32,
+	"lat":           64,
+	"lon":           128,
+	"timezone":      256,
+	"isp":           512,
+	"org":           1024,
+	"as":            2048,
+	"reverse":       4096,
+	"query":         8192,
+	"status":        16384,
+	"message":       32768,
+	"mobile":        65536,
+	"proxy":         131072, // 262144 missing
+	"district":      524288,
+	"continent":     1048576,
+	"continentCode": 2097152,
+	"asname":        4194304,
+	"currency":      8388608,
+	"hosting":       16777216,
+	"offset":        33554432,
+}
 
 type Client struct {
 	apiKey     string
@@ -87,39 +116,48 @@ func (c *Client) buildURL(ip string) string {
 	uri.RawQuery = values.Encode()
 	return uri.String()
 
-	// if c.pro {
-	// 	if ip != "" {
-	// 		return fmt.Sprintf("%s/%s?fields=%s?key=%s", apiPro, ip, c.fields, c.apiKey)
-	// 	}
-	// 	return fmt.Sprintf("%s?fields=%s?key=%s", apiPro, c.fields, c.apiKey)
-	// }
-	// return fmt.Sprintf("%s/%s?fields=%s", apiFree, ip, c.fields)
 }
 
-func (c *Client) fieldAllowed(fieldName string) bool {
+func (c *Client) fieldAllowed(fieldName string) (ok bool) {
 
-	var allowed = []string{"status", "message", "continent", "continentCode", "country", "countryCode", "region", "regionName", "city", "district", "zip", "lat", "lon", "timezone", "offset", "currency", "isp", "org", "as", "asname", "reverse", "mobile", "proxy", "hosting", "query"}
+	_, ok = allFields[fieldName]
+	return
 
-	for _, value := range allowed {
-		if fieldName == value {
-			return true
-		}
-	}
-	return false
 }
 
 // SetFields allows to change what fields to query to the API,
 //   if a field is not allowed by the API won't be added
-func (c *Client) SetFields(fields []string) {
+func (c *Client) SetFields(fields []string, numeric bool) {
 
 	var finalFields []string
 
 	for _, field := range fields {
-		if c.fieldAllowed(field) {
+		if c.fieldAllowed(field) && !exists(finalFields, field) {
 			finalFields = append(finalFields, field)
 		}
 	}
+
+	if numeric {
+		var total int
+		for _, k := range finalFields {
+			total = total + allFields[k]
+		}
+		c.fields = strconv.Itoa(total)
+		return
+	}
 	c.fields = strings.Join(finalFields, ",")
+
+}
+
+func exists(items []string, item string) bool {
+
+	for _, i := range items {
+		if item == i {
+			return true
+		}
+	}
+
+	return false
 
 }
 
